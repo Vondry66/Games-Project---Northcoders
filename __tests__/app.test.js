@@ -44,14 +44,15 @@ describe("GET by ID", () => {
       .then(({ body }) => {
         expect(body.review).toEqual({
           review_id: REVIEW_ID,
-          title: expect.any(String),
-          designer: expect.any(String),
-          owner: expect.any(String),
-          review_img_url: expect.any(String),
-          review_body: expect.any(String),
-          category: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
+          title: "Ultimate Werewolf",
+          designer: "Akihisa Okui",
+          owner: "bainesface",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "We couldn't find the werewolf!",
+          category: "social deduction",
+          created_at: "2021-01-18T10:01:41.251Z",
+          votes: 5,
         });
       });
   });
