@@ -12,8 +12,8 @@ const patchReviewsById = (req, res, next) => {
   const updateVotes = req.body;
 
   updateReviewsById(review_id, updateVotes)
-    .then((updatedVotes) => {
-      res.status(201).send({ updatedVotes });
+    .then((updatedReviews) => {
+      res.status(201).send({ updatedReviews });
     })
     .catch((err) => {
       next(err);

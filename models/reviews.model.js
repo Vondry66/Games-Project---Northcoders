@@ -17,6 +17,13 @@ const updateReviewsById = (review_id, updateVotes) => {
       [votes, revId]
     )
     .then((result) => {
+      const review = result.rows[0];
+      if (!review) {
+        return Promise.reject({
+          status: 404,
+          msg: `No review found for review_id:${review_id}`,
+        });
+      }
       return result.rows[0];
     });
 };
