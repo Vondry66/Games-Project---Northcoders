@@ -7,4 +7,18 @@ const selectReviews = (review_id) => {
     });
 };
 
-module.exports = { selectReviews };
+const updateReviewsById = (review_id, updateVotes) => {
+  const revId = review_id;
+  let votes = updateVotes.inc_votes;
+  console.log(revId, votes);
+  return db
+    .query(
+      `UPDATE reviews SET votes = votes+$1 WHERE 
+    review_id=$2 RETURNING *;`,
+      [votes, revId]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
+};
+module.exports = { selectReviews, updateReviewsById };
