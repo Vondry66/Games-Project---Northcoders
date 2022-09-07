@@ -10,7 +10,6 @@ const selectReviews = (review_id) => {
 const updateReviewsById = (review_id, updateVotes) => {
   const revId = review_id;
   let votes = updateVotes.inc_votes;
-  console.log(revId, votes);
   return db
     .query(
       `UPDATE reviews SET votes = votes+$1 WHERE 

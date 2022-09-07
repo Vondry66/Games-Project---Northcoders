@@ -81,7 +81,7 @@ describe("GET users", () => {
         });
       });
   });
-  it("404: should return correct mesage when passed a wrong path ", () => {
+  it("404: should return correct message when passed a wrong path ", () => {
     return request(app)
       .get("/api/user")
       .expect(404)
@@ -129,7 +129,7 @@ describe("201 : Patch reviews and votes", () => {
       .expect(201)
       .then((response) => {
         const { body } = response;
-        console.log(response.body);
+
         expect(body.updatedVotes).toEqual({
           review_id: 3,
           title: "Ultimate Werewolf",
