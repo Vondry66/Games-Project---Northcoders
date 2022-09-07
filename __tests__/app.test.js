@@ -81,12 +81,67 @@ describe("GET users", () => {
         });
       });
   });
-  it("404: should return correct mesage when passed a wrong path ", () => {
+  it("404: should return correct message when passed a wrong path ", () => {
     return request(app)
       .get("/api/user")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Path not found!");
+      });
+  });
+});
+
+describe("201 : Patch reviews and votes", () => {
+  it("should return an updated array ", () => {
+    const REVIEW_ID = 2;
+    const updatedVotes = {
+      votes: 6,
+    };
+    return request(app)
+      .patch(`/api/reviews/${REVIEW_ID}`)
+      .send({ inc_votes: 1 })
+      .expect(201)
+      .then((response) => {
+        const { body } = response;
+        console.log(response.body);
+        expect(body.updatedVotes).toEqual({
+          review_id: 2,
+          title: "Jenga",
+          designer: "Leslie Scott",
+          owner: "philippaclaire9",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "Fiddly fun for all the family",
+          category: "dexterity",
+          created_at: "2021-01-18T10:01:41.251Z",
+          ...updatedVotes,
+        });
+      });
+  });
+  it("should return an updated array ", () => {
+    const REVIEW_ID = 3;
+    const updatedVotes = {
+      votes: -95,
+    };
+    return request(app)
+      .patch(`/api/reviews/${REVIEW_ID}`)
+      .send({ inc_votes: -100 })
+      .expect(201)
+      .then((response) => {
+        const { body } = response;
+
+        expect(body.updatedVotes).toEqual({
+          review_id: 3,
+          title: "Ultimate Werewolf",
+          designer: "Akihisa Okui",
+          owner: "bainesface",
+          review_img_url:
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+          review_body: "We couldn't find the werewolf!",
+          category: "social deduction",
+          created_at: "2021-01-18T10:01:41.251Z",
+          ...updatedVotes,
+        });
       });
   });
 });
