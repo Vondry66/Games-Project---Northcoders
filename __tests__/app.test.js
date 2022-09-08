@@ -53,15 +53,16 @@ describe("GET by ID", () => {
           category: "social deduction",
           created_at: "2021-01-18T10:01:41.251Z",
           votes: 5,
+          comment_count: 3,
         });
       });
   });
   it("404: should receive correct error when passed invalid id", () => {
     return request(app)
-      .get(`/api/reviews/??`)
+      .get(`/api/reviews/999`)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Path not found!");
+        expect(body.msg).toBe("review 999 doesn't exist");
       });
   });
 });
@@ -103,8 +104,8 @@ describe("201 : Patch reviews and votes", () => {
       .expect(201)
       .then((response) => {
         const { body } = response;
-        console.log(response.body);
-        expect(body.updatedVotes).toEqual({
+
+        expect(body.updatedReviews).toEqual({
           review_id: 2,
           title: "Jenga",
           designer: "Leslie Scott",
@@ -130,7 +131,7 @@ describe("201 : Patch reviews and votes", () => {
       .then((response) => {
         const { body } = response;
 
-        expect(body.updatedVotes).toEqual({
+        expect(body.updatedReviews).toEqual({
           review_id: 3,
           title: "Ultimate Werewolf",
           designer: "Akihisa Okui",
@@ -141,6 +142,32 @@ describe("201 : Patch reviews and votes", () => {
           category: "social deduction",
           created_at: "2021-01-18T10:01:41.251Z",
           ...updatedVotes,
+        });
+      });
+  });
+});
+
+describe("GET reviews ", () => {
+  it("200:should respond with an array of correct keys and values ", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body.reviews.length > 0).toBe(true);
+        expect(Array.isArray(body.reviews)).toBe(true);
+        body.reviews.forEach((review) => {
+          expect(review).toMatchObject({
+            review_id: expect.any(Number),
+            title: expect.any(String),
+            category: expect.any(String),
+            designer: expect.any(String),
+            owner: expect.any(String),
+            review_body: expect.any(String),
+            review_img_url: expect.any(String),
+            created_at: expect.any(Number),
+            votes: expect.any(Number),
+          });
         });
       });
   });
