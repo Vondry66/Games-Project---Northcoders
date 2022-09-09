@@ -28,8 +28,10 @@ const patchReviewsById = (req, res, next) => {
     });
 };
 const getReviews = (req, res, next) => {
-  const { sort_by, order_by, category } = req.params;
-  selectReviews(sort_by, order_by, category)
+  const { sort_by, order_by, category } = req.query;
+  console.log(req.query);
+
+  selectReviews(req.query)
     .then((review) => {
       res.status(200).send({ review });
     })

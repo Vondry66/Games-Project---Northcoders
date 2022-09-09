@@ -3,7 +3,7 @@ const request = require("supertest");
 const testData = require("../db/data/test-data");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
-
+const sorted = require("jest-sorted");
 beforeEach(() => {
   return seed(testData);
 });
@@ -153,10 +153,9 @@ describe("GET reviews ", () => {
       .get("/api/reviews")
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
-        expect(body.reviews.length > 0).toBe(true);
-        expect(Array.isArray(body.reviews)).toBe(true);
-        body.reviews.forEach((review) => {
+        expect(body.review.length > 0).toBe(true);
+        expect(Array.isArray(body.review)).toBe(true);
+        body.review.forEach((review) => {
           expect(review).toMatchObject({
             review_id: expect.any(Number),
             title: expect.any(String),
@@ -165,10 +164,48 @@ describe("GET reviews ", () => {
             owner: expect.any(String),
             review_body: expect.any(String),
             review_img_url: expect.any(String),
-            created_at: expect.any(Number),
+            created_at: expect.any(String),
             votes: expect.any(Number),
+            comment_count: expect.any(Number),
           });
         });
+      });
+  });
+  it("200: should respond with an array sorted by date,descending", () => {
+    return request(app)
+      .get("/api/reviews")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.review).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  it("200: should be sorted by the correct key when passed a sort query", () => {
+    return request(app)
+      .get("/api/reviews?category=dexterity")
+      .expect(200)
+      .then(({ body }) => {
+        body.review.forEach(() => {
+          expect.objectContaining({
+            title: expect.any(String),
+            designer: expect.any(String),
+            owner: expect.any(String),
+            review_img_url: expect.any(String),
+            review_body: expect.any(String),
+            category: "dexterity",
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+
+  it("400: should return correct error when requested non existing sort_by", () => {
+    return request(app)
+      .get("/api/reviews?sort_by=flyingspaghettimonster")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request!");
       });
   });
 });
