@@ -21,7 +21,6 @@ const selectReviewsById = (review_id) => {
       [review_id]
     )
     .then((result) => {
-      console.log(result.rows);
       const reviewID = result.rows[0];
       if (!reviewID) {
         return Promise.reject({
@@ -54,11 +53,16 @@ const updateReviewsById = (review_id, updateVotes) => {
     });
 };
 
-const selectReviews = (sort_by = "category", order = "desc", category) => {
-  const validColumns = ["category", "created_at"];
+const selectReviews = ({
+  sort_by = "created_at",
+  order = "desc",
+  category,
+}) => {
+  const validColumns = ["category", "created_at", "desc"];
   if (!validColumns.includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: "Bad request !" });
+    return Promise.reject({ status: 400, msg: "Bad request!" });
   }
+  console.log(category);
   let queryStr = `SELECT
     reviews.review_id,
     reviews.title,
@@ -72,22 +76,21 @@ const selectReviews = (sort_by = "category", order = "desc", category) => {
     COUNT (comments.review_id):: INT AS comment_count
     FROM reviews
     LEFT JOIN comments ON reviews.review_id = comments.review_id`;
-  // let queryValue = [];
+
+  let queryValue = [];
   if (category) {
-    queryStr += ` WHERE reviews.category = $1 ORDER BY ${sort_by} ${order}`;
-    return db
-      .query(queryStr, [category])
-      .then((result) => {
-        return result.rows;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    queryStr += ` WHERE reviews.category = $1`;
+    queryValue.push(category);
   }
   queryStr += ` GROUP BY reviews.review_id ORDER BY reviews.created_at DESC;`;
-  return db.query(queryStr).then((result) => {
-    return result.rows;
-  });
+  return db
+    .query(queryStr, queryValue)
+    .then((result) => {
+      return result.rows;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 module.exports = { selectReviewsById, updateReviewsById, selectReviews };
